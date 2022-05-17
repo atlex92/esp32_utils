@@ -2,7 +2,6 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 #include "ITask.hpp"
-#include "threadSafeDbg.hpp"
 #include "InterruptLocker.hpp"
 #include "esp_log.h"
 
@@ -40,11 +39,8 @@ void ITask::runTask(void* pTaskInstance) {
 
 void ITask::start(void* taskData) {
 
-	if (_taskName == "Task") {
-		assert(false);
-	}
 	if (_taskDescr != nullptr) {
-		printf("Task::start - There might be a task with name: %s already running!\r\n", _taskName.c_str());
+		ESP_LOGE(TAG, "Task::start - There might be a task with name: %s already running!", _taskName.c_str());
 		delay(500);
 		assert(false);
 	}
