@@ -1,0 +1,7 @@
+menu "ESP32 Utils lib configuration"
+config ENABLE_ARDUINO_SPIFFS_DRIVER
+    bool "Enable Arduino SPIFFS driver implementation"
+    default n
+    help
+        This will include SPIFFS driver which is built on Arduini SPIFFS lib
+endmenu
