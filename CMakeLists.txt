@@ -6,12 +6,12 @@ inc
 )
 
 set(requires
-    # arduino
     cpp_utils
     esp_http_client
     mbedtls
     esp-tls
     nvs_flash
+    esp_http_server
 )
 
 function(maybe_add_component component_name)
