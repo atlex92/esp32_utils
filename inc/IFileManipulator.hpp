@@ -17,11 +17,11 @@ class IFileManipulator {
             delete _driver;
         }
 
-        virtual bool saveContentToFile(const string& content, const string& filename) = 0;
-        virtual std::pair<bool, std::string> loadContentFromFile(const string& filename) = 0;
-        virtual bool appendContentToFile(const string& content, const string& filename) = 0; 
-        virtual uint32_t countFilesInDirectory(const std::string& directory) = 0;
+        virtual bool saveContentToFile(const std::string& content, const std::string& filename) const = 0;
+        virtual std::pair<bool, std::string> loadContentFromFile(const std::string& filename) const = 0;
+        virtual bool appendContentToFile(const std::string& content, const std::string& filename) const = 0; 
+        virtual uint32_t countFilesInDirectory(const std::string& directory) const = 0;
         virtual std::vector<std::string> dataFilesList (const std::string& directory) const = 0;        
-        virtual bool doesFileExist(const string& filename) = 0;
-        virtual bool deleteFile(const std::string& filename) = 0;
+        virtual bool doesFileExist(const std::string& filename) const = 0;
+        virtual bool deleteFile(const std::string& filename) const = 0;
 };

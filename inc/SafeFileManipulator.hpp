@@ -21,21 +21,21 @@ class SafeFileManipulator : public IFileManipulator {
     public:
         explicit SafeFileManipulator(const eSafeFileSaverMode mode, IFileSystemDriver* driver);
 
-        bool saveContentToFile(const string& content, const string& filename) override;
-        bool appendContentToFile(const string& content, const string& filename) override;
-        std::pair<bool, std::string> loadContentFromFile(const string& filename) override;
-        uint32_t countFilesInDirectory(const std::string& directory) override;
+        bool saveContentToFile(const std::string& content, const std::string& filename) const override;
+        bool appendContentToFile(const std::string& content, const std::string& filename) const override;
+        std::pair<bool, std::string> loadContentFromFile(const std::string& filename) const override;
+        uint32_t countFilesInDirectory(const std::string& directory) const override;
         std::vector<std::string> dataFilesList (const std::string& directory) const override;
-        bool doesFileExist(const string& filename) override;
-        bool deleteFile(const std::string& filename) override;
-        bool deleteAllFiles(const std::string& directory);
+        bool doesFileExist(const std::string& filename) const override;
+        bool deleteFile(const std::string& filename) const override;
+        bool deleteAllFiles(const std::string& directory) const;
     private:
         eSafeFileSaverMode _mode;
-        bool saveInNormalMode(const string& content, const string& filename, const bool append);
-        bool saveInMd5Mode(const string& content, const string& filename, const bool append);
-        bool saveInMd5BackupMode(const string& content, const string& filename, const bool append);
-        std::pair<bool, std::string> loadInNormalMode(const string& filename);
-        std::pair<bool, std::string> loadInMd5Mode(const string& filename);
-        std::pair<bool, std::string> loadInMd5BackupMode(const string& filename);
-        string getFileNameWithExtension(const string& filename, const eSafeSaverFileType type)const;
+        bool saveInNormalMode(const std::string& content, const std::string& filename, const bool append) const;
+        bool saveInMd5Mode(const std::string& content, const std::string& filename, const bool append) const;
+        bool saveInMd5BackupMode(const std::string& content, const std::string& filename, const bool append) const;
+        std::pair<bool, std::string> loadInNormalMode(const std::string& filename) const;
+        std::pair<bool, std::string> loadInMd5Mode(const std::string& filename) const;
+        std::pair<bool, std::string> loadInMd5BackupMode(const std::string& filename) const;
+        std::string getFileNameWithExtension(const std::string& filename, const eSafeSaverFileType type) const;
 };

@@ -15,7 +15,7 @@ SafeFileManipulator::SafeFileManipulator(const eSafeFileSaverMode mode, IFileSys
                     _mode(mode) {
 }
 
-bool SafeFileManipulator::saveContentToFile(const string& content, const string& filename) {
+bool SafeFileManipulator::saveContentToFile(const string& content, const string& filename) const {
 
     switch (_mode) {
         case eSafeFileSaverMode::MODE_NORMAL:
@@ -34,7 +34,7 @@ bool SafeFileManipulator::saveContentToFile(const string& content, const string&
     return false;
 }
 
-std::pair<bool, std::string> SafeFileManipulator::loadContentFromFile(const string& filename) {
+std::pair<bool, std::string> SafeFileManipulator::loadContentFromFile(const string& filename) const {
     switch (_mode) {
         case eSafeFileSaverMode::MODE_NORMAL:
             return loadInNormalMode(filename);
@@ -52,7 +52,7 @@ std::pair<bool, std::string> SafeFileManipulator::loadContentFromFile(const stri
     return std::make_pair(false, "");
 }
 
-bool SafeFileManipulator::appendContentToFile(const string& content, const string& filename) {
+bool SafeFileManipulator::appendContentToFile(const string& content, const string& filename) const {
     switch (_mode) {
         case eSafeFileSaverMode::MODE_NORMAL:
             return saveInNormalMode(content, filename, true);
@@ -70,7 +70,7 @@ bool SafeFileManipulator::appendContentToFile(const string& content, const strin
     return false;
 }
 
-bool SafeFileManipulator::saveInNormalMode(const string& content, const string& filename, const bool append) {
+bool SafeFileManipulator::saveInNormalMode(const string& content, const string& filename, const bool append) const {
 
     bool res = false;
     static const uint8_t maxSaveTriesInNormalMode = 3;
@@ -84,7 +84,7 @@ bool SafeFileManipulator::saveInNormalMode(const string& content, const string& 
     return res;
 }
 
-bool SafeFileManipulator::saveInMd5Mode(const string& content, const string& filename, const bool append) {
+bool SafeFileManipulator::saveInMd5Mode(const string& content, const string& filename, const bool append) const {
 
     bool res = false;
     static const uint8_t maxSaveTriesInMd5Mode = 3;
@@ -126,7 +126,7 @@ bool SafeFileManipulator::saveInMd5Mode(const string& content, const string& fil
     return res;
 }
 
-string SafeFileManipulator::getFileNameWithExtension(const string& filename, const eSafeSaverFileType type) const {
+std::string SafeFileManipulator::getFileNameWithExtension(const string& filename, const eSafeSaverFileType type) const {
 
     switch (type) {
         case eSafeSaverFileType::FILE_MAIN:
@@ -148,7 +148,7 @@ string SafeFileManipulator::getFileNameWithExtension(const string& filename, con
     return "";
 }
 
-std::pair<bool, std::string> SafeFileManipulator::loadInNormalMode(const string& filename) {
+std::pair<bool, std::string> SafeFileManipulator::loadInNormalMode(const string& filename) const {
 
     if (false == doesFileExist(filename)) {
         return std::make_pair(false, "");
@@ -158,7 +158,7 @@ std::pair<bool, std::string> SafeFileManipulator::loadInNormalMode(const string&
     return std::make_pair(loadResult, loadedString);
 }
 
-std::pair<bool, std::string> SafeFileManipulator::loadInMd5Mode(const string& filename) {
+std::pair<bool, std::string> SafeFileManipulator::loadInMd5Mode(const string& filename) const {
     
     const string mainFileName = getFileNameWithExtension(filename, eSafeSaverFileType::FILE_MAIN);
     const string mainMd5FileName = getFileNameWithExtension(filename, eSafeSaverFileType::FILE_MD5_MAIN);
@@ -186,17 +186,17 @@ std::pair<bool, std::string> SafeFileManipulator::loadInMd5Mode(const string& fi
     return std::make_pair(true, fileContent);
 }
 
-std::pair<bool, std::string> SafeFileManipulator::loadInMd5BackupMode(const string& filename) {
+std::pair<bool, std::string> SafeFileManipulator::loadInMd5BackupMode(const string& filename) const {
     // TODO: Will be implemented later
     return std::make_pair(false, "");
 }
 
-bool SafeFileManipulator::saveInMd5BackupMode(const string& content, const string& filename, const bool append) {
+bool SafeFileManipulator::saveInMd5BackupMode(const string& content, const string& filename, const bool append) const {
     // TODO: Will be implemented later
     return false;
 }
 
-uint32_t SafeFileManipulator::countFilesInDirectory(const std::string& directory) {
+uint32_t SafeFileManipulator::countFilesInDirectory(const std::string& directory) const {
 
     if (eSafeFileSaverMode::MODE_NORMAL == _mode) {
         return _driver->countFiles(directory);
@@ -249,7 +249,7 @@ std::vector<std::string> SafeFileManipulator::dataFilesList (const std::string& 
     return {};
 }
 
-bool SafeFileManipulator::doesFileExist(const string& filename) {
+bool SafeFileManipulator::doesFileExist(const string& filename) const {
 
     switch (_mode) {
         case eSafeFileSaverMode::MODE_NORMAL:
@@ -269,7 +269,7 @@ bool SafeFileManipulator::doesFileExist(const string& filename) {
     }
 }
 
-bool SafeFileManipulator::deleteFile(const std::string& filename) {
+bool SafeFileManipulator::deleteFile(const std::string& filename) const {
 
     switch (_mode) {
         case eSafeFileSaverMode::MODE_NORMAL:
@@ -289,7 +289,7 @@ bool SafeFileManipulator::deleteFile(const std::string& filename) {
     }
 }
 
-bool SafeFileManipulator::deleteAllFiles(const std::string& directory) {
+bool SafeFileManipulator::deleteAllFiles(const std::string& directory) const {
 
     bool ret {true};
     std::vector<std::string> filesInDirectory {dataFilesList(directory)};

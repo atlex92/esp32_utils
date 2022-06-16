@@ -12,6 +12,7 @@ set(requires
     esp-tls
     nvs_flash
     esp_http_server
+    spiffs
 )
 
 function(maybe_add_component component_name)

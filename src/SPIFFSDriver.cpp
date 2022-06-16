@@ -22,13 +22,15 @@ SPIFFSDriver::~SPIFFSDriver() {
 void SPIFFSDriver::initialize() {
     if (false == SPIFFS.begin()) {
         ESP_LOGE(TAG, "Failed to begin SPIFFS, formatting now...");
-        // addError(eErrors::SPIFFS_ERR_MOUNT_FAILED, __LINE__);
-        assert (true == SPIFFS.format());
-        assert (true == SPIFFS.begin());
+        SPIFFS.format();
+        _isReady = SPIFFS.begin();
+    }
+    else {
+        _isReady = true;
     }
 }
 
-bool SPIFFSDriver::writeContentToFile (const string& content, const string& filename) {
+bool SPIFFSDriver::writeContentToFile (const std::string& content, const std::string& filename) const {
     if (filename.length() > maxFileNameLength) {
         ESP_LOGE(TAG, "max filename length exceeded: %s!", filename.c_str());
         return false;
@@ -36,7 +38,7 @@ bool SPIFFSDriver::writeContentToFile (const string& content, const string& file
     return doWriteContentToFile(content, filename, false);
 }
 
-bool SPIFFSDriver::appendContentToFile (const string& content, const string& filename) {
+bool SPIFFSDriver::appendContentToFile (const string& content, const string& filename) const {
     if (filename.length() > maxFileNameLength) {
         ESP_LOGE(TAG, "max filename length exceeded: %s!", filename.c_str());
         return false;
@@ -44,11 +46,9 @@ bool SPIFFSDriver::appendContentToFile (const string& content, const string& fil
     return doWriteContentToFile(content, filename, true);
 }
 
-uint32_t SPIFFSDriver::countFiles (const string& path)const {
+uint32_t SPIFFSDriver::countFiles (const string& path) const {
     uint32_t ret {0};
 
-    ESP_LOGE(TAG, "searching files in directory: %s", path.c_str());
-    
     File root = SPIFFS.open(path.c_str());
 
     if (false == root) {
@@ -70,7 +70,7 @@ uint32_t SPIFFSDriver::countFiles (const string& path)const {
     return ret;
 }
 
-vector<std::string> SPIFFSDriver::filesList(const std::string& path)const {
+vector<std::string> SPIFFSDriver::filesList(const std::string& path) const {
     
     std::vector<std::string> ret;
 
@@ -95,7 +95,7 @@ vector<std::string> SPIFFSDriver::filesList(const std::string& path)const {
     return ret;
 }
 
-bool SPIFFSDriver::readEntireFileToString (const string& filename, string& output) {
+bool SPIFFSDriver::readEntireFileToString (const std::string& filename, std::string& output) const {
     
     if (filename.length() > maxFileNameLength) {
         ESP_LOGE(TAG, "max filename length exceeded: %s!", filename.c_str());
@@ -109,7 +109,6 @@ bool SPIFFSDriver::readEntireFileToString (const string& filename, string& outpu
     File file = SPIFFS.open(filename.c_str(), FILE_READ);
 
     if (false == file) {
-        // addError(eErrors::SPIFFS_ERR_OPEN_FILE_FAILED, __LINE__);
         return false;
     }
 
@@ -127,16 +126,14 @@ bool SPIFFSDriver::readEntireFileToString (const string& filename, string& outpu
         return true;
     }
     else {
-        // addError(eErrors::SPIFFS_ERR_READ_FAILED, __LINE__);
         return false;
     }
 }
 
-bool SPIFFSDriver::deleteFile(const std::string& filename) {
+bool SPIFFSDriver::deleteFile(const std::string& filename) const {
 
     if (filename.length() > maxFileNameLength) {
         ESP_LOGE(TAG, "max filename length exceeded: %s!", filename.c_str());
-        // addError(eErrors::SPIFFS_ERR_MAX_FILENAME_EXCEED, __LINE__);
         return false;
     }
 
@@ -147,13 +144,12 @@ bool SPIFFSDriver::deleteFile(const std::string& filename) {
         return true;
     }
     else {
-        // addError(eErrors::SPIFFS_ERR_FILE_DELETE_FAILED, __LINE__);
         return false;
     }
     return false;
 }
 
-bool SPIFFSDriver::doesFileExist(const string& filename) const{
+bool SPIFFSDriver::doesFileExist(const std::string& filename) const {
 
     if (filename.length() > maxFileNameLength) {
         ESP_LOGE(TAG, "max filename length exceeded: %s!", filename.c_str());
@@ -162,7 +158,7 @@ bool SPIFFSDriver::doesFileExist(const string& filename) const{
     return SPIFFS.exists(filename.c_str());
 }
 
-bool SPIFFSDriver::doWriteContentToFile(const string& content, const string& filename, const bool append) {
+bool SPIFFSDriver::doWriteContentToFile(const std::string& content, const std::string& filename, const bool append) const {
 
     bool result = false;
     const char* modeKey = append? FILE_APPEND : FILE_WRITE;
@@ -173,7 +169,6 @@ bool SPIFFSDriver::doWriteContentToFile(const string& content, const string& fil
     }
     else {
         ESP_LOGE(TAG, "failed to open file: %s", filename.c_str());
-        // addError(eErrors::SPIFFS_ERR_OPEN_FILE_FAILED, __LINE__);
     }
 
     file.close();
@@ -181,41 +176,20 @@ bool SPIFFSDriver::doWriteContentToFile(const string& content, const string& fil
 }
 
 
-bool SPIFFSDriver::printContentToStream(const string& content, Stream& stream) {
+bool SPIFFSDriver::printContentToStream(const std::string& content, Stream& stream) const {
     const size_t printedBytes {stream.write(content.data(), content.length())};
     if(printedBytes != content.length()) {
         ESP_LOGE(TAG, "error while printing content to Stream!");
-        // addError(eErrors::SPIFFS_ERR_WRITE_FAILED, __LINE__);
         return false;
     }
     return true; 
 }
 
-string SPIFFSDriver::getFileMd5(const string& filename) {
-    
-    string ret = "";
-    
-    if (filename.length() > maxFileNameLength) {
-        ESP_LOGE(TAG, "max filename length exceeded: %s!", filename.c_str());
-        // addError(eErrors::SPIFFS_ERR_MAX_FILENAME_EXCEED, __LINE__);        
-        return ret;
-    }
-
-    if(false == doesFileExist(filename)) {
-        return ret;
-    }
-
-    string fileContent = "";
-
-    if (false == readEntireFileToString(filename, fileContent)) {
-        return ret;
-    }
-
-    ret = getMD5String(fileContent);
-
-    return ret;
+bool SPIFFSDriver::format() const {
+    return SPIFFS.format();
 }
-float SPIFFSDriver::usagePercent() const  {
+
+float SPIFFSDriver::usagePercent() const {
 
     const size_t totalBytes {SPIFFS.totalBytes()};
     const size_t usedBytes {SPIFFS.usedBytes()};
