@@ -6,6 +6,7 @@
 #include "md5.hpp"
 #include "FilePathUtils.hpp"
 #include "ThreadSafeDbg.hpp"
+#include "esp_spiffs.h"
 
 static const char* const TAG {"SPIFFS_DRIVER"};
 
@@ -20,6 +21,7 @@ SPIFFSDriver::~SPIFFSDriver() {
 }
 
 void SPIFFSDriver::initialize() {
+    _isReady = false;
     if (false == SPIFFS.begin()) {
         ESP_LOGE(TAG, "Failed to begin SPIFFS, formatting now...");
         SPIFFS.format();
@@ -186,7 +188,10 @@ bool SPIFFSDriver::printContentToStream(const std::string& content, Stream& stre
 }
 
 bool SPIFFSDriver::format() const {
-    return SPIFFS.format();
+    const bool ret {SPIFFS.format()};
+    if(!ret)
+        ESP_LOGE(TAG, "failed to format file system");
+    return ret;
 }
 
 float SPIFFSDriver::usagePercent() const {
