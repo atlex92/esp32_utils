@@ -13,6 +13,10 @@ set(requires
     nvs_flash
     esp_http_server
     spiffs
+    driver
+    spi_flash
+    esp_hw_support
+    esp_timer
 )
 
 function(maybe_add_component component_name)
@@ -22,7 +26,6 @@ function(maybe_add_component component_name)
         target_link_libraries(${COMPONENT_LIB} PUBLIC ${lib_name})
     endif()
 endfunction()
-
 
 idf_component_register(
     INCLUDE_DIRS ${includedirs}

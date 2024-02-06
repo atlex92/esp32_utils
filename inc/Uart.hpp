@@ -5,13 +5,15 @@
 #include "freertos/semphr.h"
 #include "driver/uart.h"
 #include "driver/gpio.h"
+#include <string>
 #include <vector>
 #include <functional>
 
+
 #define UART_DEFAULT_BUFFER_SIZE    (1024)
 
-#define UART_CFG_DEFAULT    ( uart_config_t {\
-    .baud_rate = 115200,\
+#define UART_CFG_DEFAULT(baud)    ( uart_config_t {\
+    .baud_rate = baud,\
     .data_bits = UART_DATA_8_BITS,\
     .parity = UART_PARITY_DISABLE,\
     .stop_bits = UART_STOP_BITS_1,\
@@ -43,7 +45,7 @@ struct Uart {
         static void uartEventTask(void* args);
         void mutexLock();
         void mutexUnlock();
-        xQueueHandle _eventQueue;
+        QueueHandle_t _eventQueue;
         const int _uartNumber;
         std::function<void()> _onDataReceivedCb {nullptr};
         SemaphoreHandle_t _mutex;

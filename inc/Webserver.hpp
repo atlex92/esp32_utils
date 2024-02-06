@@ -1,5 +1,7 @@
 #pragma once
+
 #include <esp_http_server.h>
+#include <string>
 #include <functional>
 #include <vector>
 #include <map>

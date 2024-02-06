@@ -36,11 +36,14 @@ esp_err_t ESP32HttpClient::httpClientEventHandler(esp_http_client_event_t *evt) 
         case HTTP_EVENT_ON_DATA:
             ESP_LOGI(TAG, "HTTP_EVENT_ON_DATA, len=%d", evt->data_len);
             req->response()->body.append((char*)evt->data, evt->data_len);
-            break;
+        break;
+
         case HTTP_EVENT_ON_FINISH:
             ESP_LOGI(TAG, "HTTP_EVENT_ON_FINISH");
-            break;
+        break;
+
         case HTTP_EVENT_DISCONNECTED:
+        {
             ESP_LOGI(TAG, "HTTP_EVENT_DISCONNECTED");
             int mbedtls_err = 0;
             esp_err_t err = esp_tls_get_and_clear_last_error((esp_tls_error_handle_t)evt->data, &mbedtls_err, NULL);
@@ -48,6 +51,11 @@ esp_err_t ESP32HttpClient::httpClientEventHandler(esp_http_client_event_t *evt) 
                 ESP_LOGI(TAG, "Last esp error code: 0x%x", err);
                 ESP_LOGI(TAG, "Last mbedtls failure: 0x%x", mbedtls_err);
             }
+        }
+        break;
+
+        case HTTP_EVENT_REDIRECT:
+            ESP_LOGI(TAG, "HTTP_EVENT_REDIRECT");
         break;
     }
     return ESP_OK;
@@ -158,7 +166,7 @@ bool ESP32HttpClient::performRequest(HttpRequest& req, const esp_http_client_met
     req.response()->code = (eHttpCode) esp_http_client_get_status_code(_client);
     if (err == ESP_OK) {
         const auto contentLength {esp_http_client_get_content_length(_client)};
-        ESP_LOGI(TAG, "httpCode: %u, content length: %u", req.response()->code, contentLength);
+        ESP_LOGI(TAG, "httpCode: %d, content length: %lld", req.response()->code, contentLength);
         req.set_status(eRequestStatus::REQUEST_STATUS_OK);
     }
     else {

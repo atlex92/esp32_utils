@@ -54,9 +54,9 @@ void Uart::uartEventTask(void* args) {
 
     auto idleDetectionTask = [&uart]() {
         while(uart->_lastTimeDataReceived and false == TimeUtils::isPeriodPassed(uart->_lastTimeDataReceived, UART_IDLE_PERIOD_MS)) {
-            vTaskDelay(UART_IDLE_PERIOD_MS/portTICK_RATE_MS);
+            vTaskDelay(UART_IDLE_PERIOD_MS/portTICK_PERIOD_MS);
         }
-        // printf("idle detected!\n");
+        ESP_LOGI(TAG, "idle detected!");
         if (uart->_onDataReceivedCb) {
             uart->_onDataReceivedCb();
         }
@@ -64,13 +64,13 @@ void Uart::uartEventTask(void* args) {
     AsyncFunctor idleDetector{idleDetectionTask, "idleDetectionTask", configMINIMAL_STACK_SIZE*3};
 
     while(1) {
-      if(xQueueReceive(uart->_eventQueue, (void*)&event, (portTickType)portMAX_DELAY)) {
+      if(xQueueReceive(uart->_eventQueue, (void*)&event, (TickType_t)portMAX_DELAY)) {
         MutexLocker locker{uart->_mutex};
-        // printf("uart[%d] event: %u\n", uart->_uartNumber, event.type);
+        ESP_LOGI(TAG, "uart[%d] event: %u", uart->_uartNumber, event.type);
         switch(event.type) {
             
             case UART_DATA:
-                //ESP_LOGI(TAG, "data received, %u bytes", event.size);
+                ESP_LOGI(TAG, "data received, %u bytes", event.size);
                 uart->_lastTimeDataReceived = TimeUtils::nowMs();
                 if (!idleDetector.isRunning()) {
                     idleDetector.start();

@@ -31,7 +31,7 @@ class ITask {
 
 	protected:
 		uint32_t _periodMs;
-		xTaskHandle _taskDescr;
+		TaskHandle_t _taskDescr;
 	private:
 		volatile bool _isRunning;
 		void* _taskParam;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include "StringUtils.hpp"
 
 #ifndef USE_DBG
@@ -56,7 +57,7 @@ class ThreadSafeDbg : public ITask, public Singleton<ThreadSafeDbg>{
     private:
         bool allowPrint;
         ThreadSafeDbg();
-        xQueueHandle _dbgQueue;
+        QueueHandle_t _dbgQueue;
 };
 #define DBG ThreadSafeDbg::instance()
 #endif

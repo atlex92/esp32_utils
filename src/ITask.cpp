@@ -33,8 +33,11 @@ void ITask::setPeriod(const uint32_t period) {
 
 void ITask::runTask(void* pTaskInstance) {
 	ITask* pTask = static_cast<ITask*> (pTaskInstance);
+	printf("here1\r\n");
 	pTask->run(pTask->_taskParam);
+	printf("here2\r\n");
 	pTask->stop();
+	printf("here3\r\n");
 }
 
 void ITask::start(void* taskData) {
@@ -50,7 +53,7 @@ void ITask::start(void* taskData) {
 			Safe updating _isRunning flag, context switches are excluded for a while
 		*/
 		InterruptLock lock;
-		assert(pdPASS == ::xTaskCreatePinnedToCore(&runTask, _taskName.c_str(), _stackSize, this, _priority, &_taskDescr, _coreID));
+		assert(pdPASS == ::xTaskCreate(&runTask, _taskName.c_str(), _stackSize, this, _priority, &_taskDescr));
 		_isRunning = true;
 	}
 }
@@ -60,7 +63,7 @@ void ITask::stop() {
 	if (nullptr == _taskDescr) {
 		return;
 	}
-	xTaskHandle temp = _taskDescr;
+	TaskHandle_t temp = _taskDescr;
 	onStop();
 	_taskDescr = nullptr;
 	_isRunning = false;
