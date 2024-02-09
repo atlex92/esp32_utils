@@ -17,6 +17,7 @@ set(requires
     spi_flash
     esp_hw_support
     esp_timer
+    freertos_utils
 )
 
 function(maybe_add_component component_name)

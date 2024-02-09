@@ -17,7 +17,7 @@
     #include "freertos/FreeRTOS.h"
     #include "freertos/queue.h"
     #include "string.h"
-    #include "ITask.hpp"
+    #include "task.hpp"
     #include "Singleton.hpp"
     #include "inttypes.h"
 
@@ -26,7 +26,7 @@
 }debugMessage_t;
 
 using namespace std;
-class ThreadSafeDbg : public ITask, public Singleton<ThreadSafeDbg>{
+class ThreadSafeDbg : public Task, public Singleton<ThreadSafeDbg>{
     friend class Singleton;
     public:
         void setAllowPrint(const bool val);

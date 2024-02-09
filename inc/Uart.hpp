@@ -1,13 +1,13 @@
 #pragma once
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/queue.h"
-#include "freertos/semphr.h"
-#include "driver/uart.h"
-#include "driver/gpio.h"
 #include <string>
 #include <vector>
 #include <functional>
+#include "freertos/FreeRTOS.h"
+#include "freertos/queue.h"
+#include "static_mutex.hpp"
+#include "driver/uart.h"
+#include "driver/gpio.h"
 
 
 #define UART_DEFAULT_BUFFER_SIZE    (1024)
@@ -48,6 +48,6 @@ struct Uart {
         QueueHandle_t _eventQueue;
         const int _uartNumber;
         std::function<void()> _onDataReceivedCb {nullptr};
-        SemaphoreHandle_t _mutex;
+        mutable StaticMutex _mutex;
         uint32_t _lastTimeDataReceived{};
 };

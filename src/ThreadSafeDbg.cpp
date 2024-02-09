@@ -7,14 +7,13 @@ static const char* const TAG = "DBG";
 #define MAX_MSG_LENGTH  3000UL
 
 ThreadSafeDbg::ThreadSafeDbg()
-    :   allowPrint(true) {
+    :   Task{"ThreadSafeDbg", configMINIMAL_STACK_SIZE*3, 3},
+        allowPrint(true) {
     init();
 }
 
 void ThreadSafeDbg::init() {
     _dbgQueue = xQueueCreate(MAX_QUEUE_LENGTH, sizeof(debugMessage_t));
-    setPriority(3);
-    setStackSize(configMINIMAL_STACK_SIZE*3);
 }
 
 void ThreadSafeDbg::run(void* data) {

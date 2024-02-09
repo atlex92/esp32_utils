@@ -1,6 +1,6 @@
 #include "Uart.hpp"
 #include "esp_log.h"
-#include "MutexLocker.hpp"
+#include "mutex_locker.hpp"
 #include "soc/uart_reg.h"
 #include <cstring>
 #include "AsyncFunctor.hpp"
@@ -14,15 +14,11 @@ static const char* const TAG {"uart"};
 
 Uart::Uart(const int uartNumber, const uart_config_t cfg, const size_t bufferSize)
     :   _eventQueue{},
-        _uartNumber{uartNumber},
-        _mutex{xSemaphoreCreateRecursiveMutex()} {
+        _uartNumber{uartNumber} {
     
-    assert(_mutex != NULL);
     ESP_ERROR_CHECK(uart_driver_install(_uartNumber, bufferSize * 2, bufferSize * 2, UART_EVENT_QUEUE_LENGTH, &_eventQueue, 0));
     assert(_eventQueue != NULL);
     ESP_ERROR_CHECK(uart_param_config(_uartNumber, &cfg));
-    ESP_ERROR_CHECK(remapPins(UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
-
     assert(pdTRUE == xTaskCreate(uartEventTask, "uart_event_task", configMINIMAL_STACK_SIZE*4, this, 12, NULL)); 
 }
 
