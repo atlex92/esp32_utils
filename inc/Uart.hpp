@@ -5,7 +5,7 @@
 #include <functional>
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
-#include "static_mutex.hpp"
+#include "mutex.hpp"
 #include "driver/uart.h"
 #include "driver/gpio.h"
 
@@ -48,6 +48,6 @@ struct Uart {
         QueueHandle_t _eventQueue;
         const int _uartNumber;
         std::function<void()> _onDataReceivedCb {nullptr};
-        mutable StaticMutex _mutex;
+        mutable Mutex _mutex;
         uint32_t _lastTimeDataReceived{};
 };
